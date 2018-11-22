@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.our.news.admin.dao.UserDao">
+
+    <sql id="user">
+        u.id,
+        u.username,
+        u.email,
+        u.password,
+        u.phone,
+        u.picture,
+        u.created,
+        u.updated,
+        u.isdelete
+    </sql>
+
+    <sql id="userSearchCriteria">
+        <if test="username!=null and username!=''">
+            and u.username like concat('%',#{username},'%')
+        </if>
+        <if test="phone!=null and phone!=''">
+            and u.phone like concat('%',#{phone},'%')
+        </if>
+        <if test="email!=null and email!=''">
+            and u.email like concat('%',#{email},'%')
+        </if>
+    </sql>
+
+    <select id="getUserById" resultType="User">
+        SELECT
+        <include refid="user"/>
+        FROM
+        tb_user AS u
+        WHERE
+        u.id = #{id}
+    </select>
+
+    <select id="getUserList" resultType="User">
+        SELECT
+        <include refid="user"/>
+        FROM
+        tb_user AS u
+        WHERE
+        u.isdelete != 0
+        limit #{start},#{length}
+    </select>
+
+    <select id="getUserCount" resultType="java.lang.Long">
+        SELECT
+        count(*)
+        FROM
+        tb_user
+        <where>
+            isdelete != 0
+        </where>
+    </select>
+
+    <select id="searchUserList" resultType="User">
+        SELECT
+        <include refid="user"/>
+        FROM
+        tb_user AS u
+        <where>
+            isdelete != 0
+            <include refid="userSearchCriteria"/>
+        </where>
+        limit #{start},#{length}
+    </select>
+
+    <select id="searchUserCount" resultType="java.lang.Long">
+        SELECT
+        count(*)
+        FROM
+        tb_user AS u
+        <where>
+            isdelete != 0
+            <include refid="userSearchCriteria"/>
+        </where>
+    </select>
+
+    <update id="freeze">
+        UPDATE tb_user
+        SET isdelete = 2
+        where id=#{id}
+    </update>
+
+    <update id="unfreeze">
+        UPDATE tb_user
+        SET isdelete = 1
+        where id=#{id}
+    </update>
+
+    <update id="delById">
+        UPDATE tb_user
+        SET isdelete = 0
+        where id=#{id}
+    </update>
+
+    <update id="deleteMulti">
+        UPDATE tb_user
+        SET isdelete = 0
+        where id IN
+        <foreach collection="array" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </update>
+
+    <insert id="addUser">
+        insert into
+        tb_user (username,password,email,phone,created,updated)
+        values
+        (#{username},#{password},#{email},#{phone},#{created},#{updated})
+    </insert>
+    
+    <select id="getList" resultType="User">
+        SELECT
+          <include refid="user"/>
+        FROM
+          tb_user AS u
+    </select>
+
+    <update id="update" >
+        UPDATE tb_user SET isdelete = 1 WHERE isdelete = 0
+    </update>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace  写的是Dao这个interface接口-->
+<mapper namespace="com.ournews.front.dao.UserDao">
+
+    <!--抽取sql共同的部分-->
+    <sql id="userColumn">
+        a.id,
+        a.username,
+         a.email,
+        a.password,
+        a.phone,
+        a.picture,
+        a.created,
+        a.updated,
+        a.isdelete
+    </sql>
+
+    <!--
+        mybatis 写参数格式是 #{}
+    -->
+    <!--
+    查询：
+    1.使用select 标签
+    2. id应该对应dao的方法名
+    3. resultType 对应你要映射的实体类
+    4. 在标签内部写SQL
+    5. 参数应该使用#{}格式
+    6. <include refid="userColumn"/>    ===================》引用抽取部分
+    -->
+    <select id="getEmailAndPassword" resultType="com.ournews.domain.entity.User">
+        select
+        <include refid="userColumn"/>
+        from tb_user a where a.email=#{email} and a.password=#{password}
+    </select>
+
+
+    <!-- 通过id获取User  -->
+    <select id="get" resultType="com.ournews.domain.entity.User">
+        select
+        <include refid="userColumn"/>
+        from tb_user a where a.id = #{id}
+    </select>
+
+
+    <!--保存User  save()-->
+    <insert id="save">
+        insert into tb_user (username,password,email,phone,created,updated,isdelete)value(#{username},#{password},#{email},#{phone},#{created},#{updated},1)
+    </insert>
+
+
+    <!--查询邮箱-->
+    <select id="getEmail" resultType="java.lang.Integer">
+        select count(*) from tb_user a where a.email=#{email}
+    </select>
+    <!--查手机-->
+    <select id="getPhone" resultType="java.lang.Integer">
+        select count(*) from tb_user a where a.phone=#{phone}
+    </select>
+    <!--查用户名-->
+    <select id="getUserName" resultType="java.lang.Integer">
+        select count(*) from tb_user a where  a.username=#{username}
+    </select>
+
+    <!--用户更新-->
+    <update id="update">
+        update tb_user  set username=#{username}
+         , email=#{email} , phone=#{phone}
+         ,  updated=#{updated} where id=#{id}
+    </update>
+
+    <!--查看用户发的新闻-->
+    <select id="getUserNewsList" resultType="com.ournews.domain.entity.NewsInfo">
+        SELECT * FROM tb_newinfo WHERE user_id = #{id}
+    </select>
+
+</mapper>

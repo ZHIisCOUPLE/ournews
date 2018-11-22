@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace  写的是Dao这个interface接口-->
+<mapper namespace="com.ournews.front.dao.AddNewsDao">
+
+
+    <select id="getType" resultType="com.ournews.domain.entity.NewsType">
+        select
+        a.id,
+        a.name
+        from tb_newtype a
+        where 1=1
+    </select>
+
+
+    <insert id="save">
+        insert into
+        tb_newinfo (name,user_id,content,picture_url,created,updated,type)
+        values
+        (#{name},#{user.id},#{detail},#{picture},#{created},#{updated},#{type})
+    </insert>
+
+    <select id="getNewsByNewsNameAndUserId" resultType="com.ournews.domain.entity.NewsInfo">
+        select
+            a.id,
+            a.name,
+            a.user_id as "user.id",
+            a.content as "detail",
+            a.read_count as "readCount",
+            a.comment_count as "commentCount",
+            b.name as "type",
+            d.username as "user.username",
+            a.picture_url as "picture",
+            a.isbignews as "isBigNews",
+            a.created,
+            a.updated
+        from tb_newinfo a
+        left join tb_newtype b on b.id=a.type
+        left join tb_user d on d.id=a.user_id
+        where d.id=#{id} and a.name = #{newsName}
+    </select>
+
+
+    <!--<select id="queryById" resultType="com.qf.login.entity.User">-->
+    <!--select-->
+    <!--<include refid="userColumn"/>-->
+    <!--from tb_user-->
+    <!--where id=#{id}-->
+    <!--</select>-->
+
+    <!--<select id="queryByUserNameAndPassword" resultType="com.qf.login.entity.User">-->
+    <!--select-->
+    <!--<include refid="userColumn"/>-->
+    <!--from tb_user-->
+    <!--where username=#{userName} and password=#{password}-->
+    <!--</select>-->
+
+    <!--<select id="query" resultType="com.qf.login.entity.User">-->
+    <!--select-->
+    <!--<include refid="userColumn"/>-->
+    <!--from tb_user-->
+    <!--where username=#{userName} and password=#{password}-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash;insert&ndash;&gt;-->
+    <!--<insert id="insert" >-->
+    <!--insert into tb_user (username,password,phone,email,created,updated) values (#{userName},#{password},#{phone},#{email},#{created},#{updated})-->
+    <!--</insert>-->
+
+
+    <!--&lt;!&ndash;删除&ndash;&gt;-->
+    <!--<delete id="delete">-->
+    <!--delete from tb_user where id=#{id}-->
+    <!--</delete>-->
+
+    <!--&lt;!&ndash;修改&ndash;&gt;-->
+    <!--<update id="update">-->
+    <!--update tb_user set phone=#{phone} where id=#{id}-->
+    <!--</update>-->
+
+
+</mapper>

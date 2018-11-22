@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.our.news.admin.dao.NewInfoDao">
+
+    <sql id="newsinfo">
+        n.id,
+        n.name,
+        n.user_id AS "user.id",
+        n.content AS "detail",
+        n.comment_count AS "commentCount",
+        n.picture_url AS "picture",
+        n.read_count AS "readCount",
+        n.created,
+        n.updated,
+        n.type
+    </sql>
+
+    <select id="getNewInfoById" resultType="NewsInfo">
+        SELECT
+        <include refid="newsinfo"/>
+        FROM
+        tb_newinfo AS n
+        WHERE
+        n.id = #{id}
+    </select>
+
+    <select id="getNewInfoList" resultType="NewsInfo">
+        SELECT
+        <include refid="newsinfo"/>
+        FROM
+        tb_newinfo AS n
+        limit #{start},#{length}
+    </select>
+
+    <select id="searchNewInfoList" resultType="NewsInfo">
+        SELECT
+        <include refid="newsinfo"/>
+        FROM
+        tb_newinfo AS n
+        <where>
+            <if test="name!=null and name!=''">
+                and n.name like concat('%',#{name},'%')
+            </if>
+            <if test="type!=null and type!=''">
+                and n.type like concat('%',#{type},'%')
+            </if>
+        </where>
+        limit #{start},#{length}
+    </select>
+
+    <select id="getNewInfoCount" resultType="java.lang.Long">
+        SELECT
+        count(*)
+        FROM
+        tb_newinfo
+    </select>
+
+    <select id="searchNewInfoCount" resultType="java.lang.Long">
+        SELECT
+        count(*)
+        FROM
+        tb_newinfo AS n
+        <where>
+            <if test="name!=null and name!=''">
+                and n.name like concat('%',#{name},'%')
+            </if>
+            <if test="type!=null and type!=''">
+                and n.type like concat('%',#{type},'%')
+            </if>
+        </where>
+    </select>
+
+    <update id="updateNewInfo">
+        UPDATE tb_newinfo
+        SET name = #{name},content = #{detail},type = #{type},updated = #{updated}, picture_url = #{picture}
+        where id=#{id}
+    </update>
+
+    <update id="updateNewInfoCommentCount">
+        update tb_newinfo  set comment_count=#{commentCount} where id=#{id}
+    </update>
+
+    <delete id="deleteNewInfo">
+        DELETE FROM tb_newinfo where id=#{id}
+    </delete>
+
+    <delete id="deleteMultiNew">
+        DELETE FROM tb_newinfo
+        where id IN
+        <foreach collection="array" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <insert id="insertNewInfo">
+        insert into
+        tb_newinfo (name,user_id,content,picture_url,created,updated,type)
+        values
+        (#{name},#{user.id},#{detail},#{picture},#{created},#{updated},#{type})
+    </insert>
+
+    <select id="getList" resultType="NewsInfo">
+      SELECT
+        <include refid="newsinfo"/>
+      FROM
+        tb_newinfo AS n
+    </select>
+</mapper>

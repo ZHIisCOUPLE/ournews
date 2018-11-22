@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.our.news.admin.dao.CommentDao">
+
+    <sql id="comment">
+        c.id,
+        c.new_id AS "newInfo_id",
+        c.user_id AS "user.id",
+        c.content AS "commentDetails",
+        c.likes,
+        c.created
+    </sql>
+
+    <select id="getCommentListByNewInfoId" resultType="Comment">
+        SELECT
+        <include refid="comment"/>
+        FROM
+        tb_comment AS c
+        WHERE
+        c.new_id = #{id}
+        AND
+        c.isdelete != 0
+        order by c.likes DESC
+        limit #{start},#{length}
+    </select>
+
+    <select id="getCommentCountByNewInfoId" resultType="java.lang.Long">
+        SELECT
+        count(*)
+        FROM
+        tb_comment AS c
+        WHERE
+        c.isdelete != 0
+        AND
+        c.new_id = #{id}
+    </select>
+
+    <delete id="deleteCommentById">
+        DELETE FROM tb_comment where id=#{id}
+    </delete>
+
+    <delete id="deleteCommentByNewInfoId">
+        DELETE FROM tb_comment where new_id=#{id}
+    </delete>
+    
+    <select id="getComment" resultType="java.lang.String">
+        SELECT new_id FROM tb_comment WHERE id=#{id}
+    </select>
+
+</mapper>

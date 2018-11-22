@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.our.news.admin.dao.AdminDao">
+    
+    <select id="getAdminUserByadminname" resultType="AdminUser">
+        SELECT
+        a.id,
+        a.adminname,
+        a.password
+        FROM
+        tb_adminuser AS a
+        WHERE
+        a.adminname = #{adminname}
+    </select>
+    
+    <select id="getList" resultType="AdminUser">
+        SELECT
+        a.id,
+        a.adminname,
+        a.password
+        FROM
+        tb_adminuser AS a
+    </select>
+    
+</mapper>

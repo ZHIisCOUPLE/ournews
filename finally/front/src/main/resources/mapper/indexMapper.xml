@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ournews.front.dao.IndexDao">
+
+    <select id="getNewsTypeList" resultType="com.ournews.domain.entity.NewsType">
+        select
+         id,name
+        from tb_newtype
+    </select>
+
+    <sql id="newinfoColumn" >
+        a.id,
+        a.name,
+        a.user_id as "user.id",
+        a.content as "detail",
+        a.read_count as "readCount",
+        a.comment_count as "commentCount",
+        b.name as "type",
+        d.username as "user.username",
+        a.picture_url as "picture",
+        a.isbignews as "isBigNews",
+        a.created,
+        a.updated
+    </sql>
+
+    <select id="getNewsInfoPicUrl" resultType="java.lang.String">
+        select pictrue from tb_newinfo where id = #{id}
+    </select>
+
+    <select id="get" resultType="com.ournews.domain.entity.NewsInfo">
+        select
+         <include refid="newinfoColumn" />
+        from tb_newinfo a
+        left join tb_newtype b on b.id=a.type
+        left join tb_user d on d.id=a.user_id
+        where a.id = #{id}
+    </select>
+
+
+    <select id="getList" resultType="com.ournews.domain.entity.NewsInfo">
+        select
+            <include refid="newinfoColumn" />
+        from tb_newinfo a
+        left join tb_newtype b on b.id=a.type
+        left join tb_user d on d.id=a.user_id
+    </select>
+
+
+
+
+</mapper>

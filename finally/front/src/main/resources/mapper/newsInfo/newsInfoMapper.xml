@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace  写的是Dao这个interface接口-->
+<mapper namespace="com.ournews.front.dao.NewsInfoDao">
+
+
+    <!--抽取sql共同的部分-->
+    <sql id="newsInfoColumn">
+        a.id,
+        a.name,
+        a.user_id as "user.id",
+        a.content as "detail",
+        a.read_count as "readCount",
+        a.comment_count as "commentCount",
+        b.name as "type",
+        d.username as "user.username",
+        a.picture_url as "picture",
+        a.isbignews as "isBigNews",
+        a.created,
+        a.updated
+    </sql>
+
+    <sql id="commentColumn">
+        a.id,
+        a.user_id as "user.id",
+        b.username as "user.username",
+        a.new_id as "newInfo_id",
+        a.content as "commentDetails",
+        a.likes as "likes",
+        a.created
+    </sql>
+    <!--
+        mybatis 写参数格式是 #{}
+    -->
+    <!--
+    查询：
+    1.使用select 标签
+    2. id应该对应dao的方法名
+    3. resultType 对应你要映射的实体类
+    4. 在标签内部写SQL
+    5. 参数应该使用#{}格式
+    6. <include refid="userColumn"/>    ===================》引用抽取部分
+    -->
+
+
+<!--根据ID查找新闻-->
+    <select id="get" resultType="com.ournews.domain.entity.NewsInfo">
+        select
+        <include refid="newsInfoColumn"/>
+        from tb_newinfo a
+        left join tb_newtype b on b.id=a.type
+        left join tb_user d on d.id=a.user_id
+        where a.id=#{id}
+    </select>
+
+
+<!--查找评论-->
+    <select id="getList" resultType="com.ournews.domain.entity.Comment">
+        select <include refid="commentColumn" />
+        from tb_comment a
+        left join tb_user b on b.id=a.user_id
+        where a.new_id=#{id}
+        ORDER BY a.likes DESC
+    </select>
+
+
+    <!--添加评论-->
+    <insert id="save">
+        insert into tb_comment(new_id,user_id,content,created)
+        values (#{newInfo_id},#{user.id},#{commentDetails},#{created})
+    </insert>
+    
+    <!--修改评论数量-->
+    <update id="update">
+        update tb_newinfo  set comment_count=#{commentCount} where id=#{id}
+    </update>
+    <!--修改浏览数量-->
+    <update id="upredcount">
+        update tb_newinfo  set read_count=#{readCount} where id=#{id}
+    </update>
+
+   <select id="getAllnews" resultType="com.ournews.domain.entity.NewsInfo">
+        select
+        <include refid="newsInfoColumn"/>
+        from tb_newinfo a
+        left join tb_newtype b on b.id=a.type
+        left join tb_user d on d.id=a.user_id
+        where a.user_id=#{id}
+    </select>
+
+    <select id="getAllNewsinfo" resultType="com.ournews.domain.entity.NewsInfo" >
+        select
+        <include refid="newsInfoColumn"/>
+        from tb_newinfo a
+        left join tb_newtype b on b.id=a.type
+        left join tb_user d on d.id=a.user_id
+    </select>
+
+    <select id="getBigNewsByTypeId" resultType="com.ournews.domain.entity.NewsInfo">
+        select
+        <include refid="newsInfoColumn"/>
+        from tb_newinfo a
+        left join tb_newtype b on b.id=a.type
+        left join tb_user d on d.id=a.user_id
+        where isbignews = 1 and type = #{id}
+    </select>
+
+    <select id="getMinNewsByType" resultType="com.ournews.domain.entity.NewsInfo">
+        select
+        <include refid="newsInfoColumn"/>
+        from tb_newinfo a
+        left join tb_newtype b on b.id=a.type
+        left join tb_user d on d.id=a.user_id
+        where isbignews = 0 and type = #{id}
+    </select>
+     <!--删除新闻-->
+    <delete id="delete">
+        DELETE FROM tb_newinfo WHERE id=#{id};
+    </delete>
+
+    <update id="updateCommeIdNumber">
+        update tb_comment  set likes=#{likes} <where>id=#{commeID}</where>
+    </update>
+    <!--搜索新闻-->
+    <select id="seeknews" resultType="com.ournews.domain.entity.NewsInfo">
+        SELECT
+        <include refid="newsInfoColumn"/>
+        from tb_newinfo a
+        left join tb_newtype b on b.id=a.type
+        left join tb_user d on d.id=a.user_id
+        WHERE a.name LIKE concat('%',#{seek},'%');
+    </select>
+</mapper>
